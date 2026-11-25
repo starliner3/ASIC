@@ -1,9 +1,9 @@
 # Tiny Tapeout project information
 project:
-  title:        ""      "Slow decade Counter"
-  author:       ""      "starliner3"
+  title:        "Slow decade counter"
+  author:       "starliner3"
   discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  ""      "counts from 0 to 9 slowly and shows it on display
+  description:  "counts from 0 to 9 slowly and shows it on display"
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
   clock_hz:     0       # Clock frequency in Hz (or 0 if not applicable)
 
