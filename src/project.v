@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Your Name
+ * Copyright (c) 2024 starliner3
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -16,12 +16,36 @@ module tt_um_example (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-  // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
-  assign uio_out = 0;
-  assign uio_oe  = 0;
+    // The button comes from outside and isn't in step with the clock,
+    // so pass it through two flip-flops before using it.
+    reg [1:0] btn_sync;
+    always @(posedge clk) begin
+        btn_sync <= {btn_sync[0], ui_in[0]};
+    end
+    wire roll = btn_sync[1];
 
-  // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, rst_n, 1'b0};
+    // The dice value, 1 to 6
+    reg [2:0] count;
+    always @(posedge clk) begin
+        if (!rst_n)
+            count <= 3'd1;           // reset: start at 1
+        else if (roll) begin         // button held: keep counting
+            if (count == 3'd6)
+                count <= 3'd1;       // wrap from 6 back to 1
+            else
+                count <= count + 1;
+        end
+        // button released: nothing assigned, so count holds its value
+    end
+
+    // Dice value goes out on uo[2:0], the other 5 pins are 0
+    assign uo_out = {5'b0, count};
+
+    // The bidirectional pins aren't used
+    assign uio_out = 8'b0;
+    assign uio_oe  = 8'b0;
+
+    // List all unused inputs to prevent warnings
+    wire _unused = &{ena, ui_in[7:1], uio_in, 1'b0};
 
 endmodule
